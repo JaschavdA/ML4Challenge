@@ -1,3 +1,30 @@
+# import logging
+# import gymnasium as gym
+# from gymsnake.envs.controller import Action  # performs the registration of snake-v1 with gymnasium
+# from gymsnake.envs.controller import ObsType
+# from gymsnake.envs import snake_env
+
+# log = logging.getLogger("snake_challenge")
+# log.setLevel(logging.INFO)
+# if not log.hasHandlers(): log.addHandler(logging.StreamHandler())
+
+# env = gym.make('snake-v1', disable_env_checker=True, grid_size=(7, 7), obs_type = ObsType.COORDS)
+# obs, info = env.reset()
+# env.unwrapped.render(frame_speed=0.1)
+
+# env.metadata['render_fps'] = 200
+
+# training = True
+# if training:
+#     # mountaincar does not give good results with DQN default settings,
+#     # so use tuned settings from SB3 Zoo: rl-baselines3-zoo\hyperparams\dqn.yml
+#     model = DQN("MlpPolicy", env, verbose=1, device="cpu", gamma=0.98, learning_rate=0.005, buffer_size=10000, exploration_fraction=0.2, exploration_final_eps=0.07, exploration_initial_eps=1.0, train_freq=16, gradient_steps=8, batch_size=128, learning_starts=1000, target_update_interval=600, _init_setup_model=True, policy_kwargs=dict(net_arch=[256, 256]), tensorboard_log="tensorboard_logs/snake_dqn_agent/")
+#     model.learn(total_timesteps=40000)#20000)
+#     model.save("learned_models/dqn_snake")
+# else:
+#     model = DQN.load("learned_models/dqn_snake")
+
+
 # Single-player agent for gymsnake using RL library Stable-Baselines3
 
 import time
@@ -45,7 +72,7 @@ if training:
     '''
 
     # benchmark: PPO with standard hyperparameter values and 2000000 gives good results (~ snake length 18)
-    model.learn(total_timesteps=200000, reset_num_timesteps=False)
+    model.learn(total_timesteps=2000000, reset_num_timesteps=False)
     model.save("learned_models/singlesnake_agent")
 else:
     model = PPO.load("learned_models/singlesnake_agent")
@@ -53,7 +80,7 @@ else:
 log.info("finished training, now use the model to predict the optimal moves and render the env")
 obs, info = env.reset()
 env.render()
-time.sleep(5)  # sufficient time to start screen capture
+# time.sleep(5)  # sufficient time to start screen capture
 
 log.info("start game")
 done = False

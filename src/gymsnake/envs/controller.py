@@ -78,6 +78,9 @@ class Snake:
 
 
 class Controller:
+
+    previous_snake = None
+    steps = 0
     """
     Controller contains the game logic
     """
@@ -189,6 +192,11 @@ class Controller:
             # random.choice does not work on sets so convert to tuple
             self.foods.append(random.choice(tuple(all_empty_coords)))
 
+    
+    #Manhatten distance
+    def getDistance(self, snake_x, snake_y, food_x, food_y) : 
+        return abs(snake_x - food_x + snake_y - food_y)
+
     def step_snake(self, action, snake_idx) -> int:
         """
         moves snake, if it is alive, and then checks for food and snake collisions
@@ -196,6 +204,24 @@ class Controller:
 
         # cannot use self.alive_snakes() here as the list of actions contains entries for all snakes, also dead ones
         snake = self.snakes[snake_idx]
+        self.steps += 1
+        if(self.previous_snake == None): 
+            self.previous_snake = snake
+
+
+        (food_x, food_y) = self.foods[0]
+        (snake_x, snake_y) = snake.head
+        (previous_snake_x, previous_snake_y) = self.previous_snake.head
+        previousDistance = self.getDistance(previous_snake_x, previous_snake_y, food_x, food_y)
+        currentDistance = self.getDistance(snake_x, snake_y, food_x, food_y)
+        # give a small reward for getting closer to food
+        if currentDistance > previousDistance : 
+            reward = - 0.5
+        elif currentDistance < previousDistance : 
+            reward = 0.5
+
+        self.previous_snake_y = snake_y
+        self.previous_snake_x = snake_x
 
         # check if snake is alive
         if not snake.is_alive:
@@ -207,18 +233,24 @@ class Controller:
         # check for death of snake
         if self.is_off_grid(snake.head) or self.is_snake_square_except_own_head(snake):
             snake.is_alive = False
-            reward = -1
+            reward = -5
         # check for food
         elif self.is_food_square(snake.head):
             self.foods.remove(snake.head)  # all food coords are unique
             self.place_new_food()
-            reward = 1
+            reward = 100 / self.steps
+            #not yet tested
+            self.steps = 0
         # ordinary step
         else:
             snake.remove_tail_end()
             reward = 0
 
         return reward
+    
+
+    
+    
 
     def step(self, actions) -> tuple[list[(int, int)], list[Snake], list[int], bool, dict[str, int]]:
         """
