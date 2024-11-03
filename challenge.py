@@ -64,7 +64,7 @@ env.render()
 
 training = False
 if training:
-    model = PPO("MlpPolicy", env, device="cpu", verbose=1, tensorboard_log="tensorboard_logs/snake_agent/")
+    model = PPO("MlpPolicy", env, device="cpu", verbose=1, tensorboard_log="tensorboard_logs/snake_agent/", ent_coef=0.1)
     '''
     # example how to tweak hyperparameters:
     model = DQN("MlpPolicy", env, verbose=1, learning_rate=0.0005, gamma=0.99, policy_kwargs=dict(layers=[64, 64]),
@@ -75,12 +75,12 @@ if training:
     model.learn(total_timesteps=2000000, reset_num_timesteps=False)
     model.save("learned_models/singlesnake_agent")
 else:
-    model = PPO.load("learned_models/singlesnake_agent")
+    model = PPO.load("learned_models/singlesnake_agent20milv2")
 
 log.info("finished training, now use the model to predict the optimal moves and render the env")
 obs, info = env.reset()
 env.render()
-# time.sleep(5)  # sufficient time to start screen capture
+time.sleep(5)  # sufficient time to start screen capture
 
 log.info("start game")
 done = False

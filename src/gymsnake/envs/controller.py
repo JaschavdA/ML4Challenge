@@ -220,8 +220,7 @@ class Controller:
         elif currentDistance < previousDistance : 
             reward = 0.5
 
-        self.previous_snake_y = snake_y
-        self.previous_snake_x = snake_x
+        self.previous_snake = snake
 
         # check if snake is alive
         if not snake.is_alive:
@@ -238,9 +237,7 @@ class Controller:
         elif self.is_food_square(snake.head):
             self.foods.remove(snake.head)  # all food coords are unique
             self.place_new_food()
-            reward = 100 / self.steps
-            #not yet tested
-            self.steps = 0
+            reward = 10
         # ordinary step
         else:
             snake.remove_tail_end()
